@@ -18,9 +18,7 @@ from Pipeline.models.heart_pathology import HeartPathology
 from Pipeline.dicom2image import ImageFromDicom
 from Pipeline.filtration.LocalFiltration import MaskFiltration
 from Pipeline.filtration.GlobalFiltration import PathologyFiltration
-from Pipeline.visualization.pathology_visualization import Visualisation
 from Pipeline.localization import PathologyLocalization
-from Pipeline.result_visualisation import SCImage
 from Pipeline.configs import *
 
 
@@ -289,19 +287,6 @@ class PipelineLungsDX:
         for i, image_data in enumerate(self.images_data):
             self.study_result.dicoms[i] = image_data.dicom
             self.study_result.projections[i] = image_data.validation['stage_4']
-            if image_data.processed:
-                if image_data.is_pathological or \
-                        (CTR in REQUIRED_PATHOLOGIES['heart'] and not image_data.cardiomegaly.not_processed):
-                    image_data.result_image = Visualisation(image_data=image_data).make_visualisation()
-                sc = SCImage(
-                    image=image_data.result_image,
-                    version=self.version,
-                    study_result=self.study_result.kafka_dictionary,
-                    warnings = image_data.warnings,
-                    date_time=datetime
-                )
-                sc.create()
-                self.study_result.processed_images[i] = np.asarray(sc.img)
             self.study_result.warnings[i] = image_data.warnings
 
     def __image_from_dicom(self, dicom_images: List[Dataset]) -> None:
