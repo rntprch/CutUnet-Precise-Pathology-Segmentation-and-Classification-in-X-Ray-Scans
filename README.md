@@ -1,1 +1,1 @@
-# DL-Project-Team-18-CutUnet
+# CutUnet For Precise Pathology Segmentation
